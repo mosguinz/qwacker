@@ -7,23 +7,27 @@ class ArchiveCategory(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @app_commands.command(
-        name="archive", description="Archive text channels in the given category ID"
-    )
+    @app_commands.command(name="archive", description="Archive text channels in the given category ID")
     @app_commands.describe(
-        category_id="The ID of the category containing the channels to archive",
-        destination_id="The ID of the category to move the channels into",
-        suffix="Suffix to add to the channel name",
+        to_archive="Text channel or category to archive",
+        destination="Category to move the channels into",
+        suffix="Suffix to add to the channel name e.g., “-fa23”",
     )
-    @app_commands.describe()
     async def archive(
         self,
         interaction: discord.Interaction,
-        category_id: int,
-        destination_id: int,
+        to_archive: discord.TextChannel | discord.CategoryChannel,
+        destination: discord.CategoryChannel,
         suffix: str = None,
     ):
-        await interaction.response.send_message("test")
+        channels = to_archive.text_channels if isinstance(to_archive, discord.CategoryChannel) else [to_archive]
+
+        for channel in channels:
+            if suffix:
+                await channel.edit(name=channel.name + suffix, reason="Archiving channel")
+            await channel.move(end=True, category=destination, sync_permissions=True, reason="Archiving channel")
+
+        await interaction.response.send_message(f"Finished archiving {len(channels)} channel(s).")
 
 
 async def setup(bot: commands.Bot):
