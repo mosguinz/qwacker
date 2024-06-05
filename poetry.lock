@@ -28,6 +28,14 @@ python-versions = ">=3.7"
 frozenlist = ">=1.1.0"
 
 [[package]]
+name = "async-timeout"
+version = "4.0.3"
+description = "Timeout context manager for asyncio programs"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[[package]]
 name = "attrs"
 version = "23.2.0"
 description = "Classes Without Boilerplate"
@@ -162,6 +170,17 @@ test = ["appdirs (==1.4.4)", "covdefaults (>=2.3)", "pytest-cov (>=4.1)", "pytes
 type = ["mypy (>=1.8)"]
 
 [[package]]
+name = "python-dotenv"
+version = "1.0.1"
+description = "Read key-value pairs from a .env file and set them as environment variables"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[package.extras]
+cli = ["click (>=5.0)"]
+
+[[package]]
 name = "yarl"
 version = "1.9.4"
 description = "Yet another URL library"
@@ -176,11 +195,12 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.11"
-content-hash = "a7d124bd7996e976d3294b77392238a9747eda01dc0e14c6728e42ede8ae53c8"
+content-hash = "c7d7f4240045860d9ac792455c04d80c6a587849d7bc3e99ccf602142c1089b3"
 
 [metadata.files]
 aiohttp = []
 aiosignal = []
+async-timeout = []
 attrs = []
 black = []
 click = []
@@ -193,4 +213,5 @@ mypy-extensions = []
 packaging = []
 pathspec = []
 platformdirs = []
+python-dotenv = []
 yarl = []
