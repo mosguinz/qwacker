@@ -4,6 +4,9 @@ import os
 import discord
 from discord.ext.commands import Bot
 
+import dotenv
+dotenv.load_dotenv()
+
 GUILD_ID = os.getenv("GUILD_ID")
 BOT_TOKEN = os.getenv("DISCORD_BOT_TOKEN")
 
