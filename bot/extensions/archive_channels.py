@@ -22,12 +22,13 @@ class ArchiveCategory(commands.Cog):
     ):
         channels = to_archive.text_channels if isinstance(to_archive, discord.CategoryChannel) else [to_archive]
 
+        await interaction.response.defer(thinking=True)
         for channel in channels:
             if suffix:
                 await channel.edit(name=channel.name + suffix, reason="Archiving channel")
             await channel.move(end=True, category=destination, sync_permissions=True, reason="Archiving channel")
 
-        await interaction.response.send_message(f"Finished archiving {len(channels)} channel(s).")
+        await interaction.followup.send(f"Finished archiving {len(channels)} channel(s).")
 
 
 async def setup(bot: commands.Bot):
