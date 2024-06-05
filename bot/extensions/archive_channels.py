@@ -20,6 +20,10 @@ class ArchiveCategory(commands.Cog):
         destination: discord.CategoryChannel,
         suffix: str = None,
     ):
+        if not interaction.user.guild_permissions.administrator:
+            await interaction.response.send_message("You do not have permission to invoke this command.")
+            return
+
         channels = to_archive.text_channels if isinstance(to_archive, discord.CategoryChannel) else [to_archive]
 
         await interaction.response.defer(thinking=True)
