@@ -1,6 +1,10 @@
+import logging
+
 import discord
 from discord import app_commands
 from discord.ext import commands
+
+log = logging.getLogger()
 
 
 class ArchiveCategory(commands.Cog):
@@ -36,4 +40,5 @@ class ArchiveCategory(commands.Cog):
 
 
 async def setup(bot: commands.Bot):
+    log.info("Loading ArchiveCategory extension")
     await bot.add_cog(ArchiveCategory(bot))
