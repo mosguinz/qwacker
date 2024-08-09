@@ -60,7 +60,8 @@ class Rules(commands.Cog):
         welcome = "# Welcome to CSC Duclings!"
         embeds = [rules_embed, disclaimer_embed]
         if destination:
-            await destination.send(content=welcome, embeds=embeds)
+            message = await destination.send(content=welcome, embeds=embeds)
+            await interaction.response.send_message(content=message.jump_url)
         else:
             await interaction.response.send_message(content=welcome, embeds=embeds)
 
