@@ -29,16 +29,16 @@ rules_embed.add_field(
 disclaimer_embed = Embed(title="Disclaimer")
 disclaimer_embed.description = "\n\n".join(
     (
-        "This server is independently managed by current and former students of Professor Ta "
-        "and is not officially affiliated with or endorsed by the University or the "
-        "Department of Computer Science.",
+        "This Discord server is independently managed by current and former students of Professor Ta "
+        "and is not affiliated, authorized, endorsed by, or in any way officially associated with the University or "
+        "the Department of Computer Science.",
         "**Your participation is entirely optional**, and the content shared here is for informational purposes only. "
         "Any announcements or communications from tutors, graders, discussion leaders, or any members acting on "
         "official capacity on Discord are provided for your convenience and do not replace official channels such as "
         "email and Canvas discussion forums.",
         "The Department of Computer Science, Professor Ta, and members of his team are not affiliated with this "
         "server and are not responsible for moderating its content. Any advice or information shared here should be "
-        "cross-referenced with official resources. The administrators of this server are not responsible for any "
+        "cross-referenced with official resources. The maintainers of this server are not responsible for any "
         "inaccuracies or issues that may arise from the use of this server.",
         "We’ve kept this space running for our fellow Duclings since Spring 2021 and hope to pass it on to future "
         "cohorts — please help us maintain it by adhering to the rules and using common sense.",
