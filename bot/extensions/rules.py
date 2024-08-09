@@ -45,6 +45,9 @@ disclaimer_embed.description = "\n\n".join(
     )
 )
 
+pick_roles_embed = Embed(title="Ready?")
+pick_roles_embed.description = "Head over to <#815094070900031530> and select your roles to gain access to the server!"
+
 
 class Rules(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -58,7 +61,7 @@ class Rules(commands.Cog):
             return
 
         welcome = "# Welcome to CSC Duclings!"
-        embeds = [rules_embed, disclaimer_embed]
+        embeds = [rules_embed, disclaimer_embed, pick_roles_embed]
         if destination:
             message = await destination.send(content=welcome, embeds=embeds)
             await interaction.response.send_message(content=message.jump_url)
