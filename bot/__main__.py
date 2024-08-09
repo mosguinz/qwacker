@@ -26,6 +26,7 @@ class Qwacker(Bot):
 
     async def setup_hook(self) -> None:
         await self.load_extension("bot.extensions.archive_channels")
+        await self.load_extension("bot.extensions.rules")
 
         self.tree.copy_global_to(guild=GUILD)
         await self.tree.sync(guild=GUILD)
