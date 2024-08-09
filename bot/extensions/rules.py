@@ -11,15 +11,15 @@ rules_embed.description = (
     "Welcome! This is a student-run Discord server for Professor Ta’s classes. To keep things "
     "running smoothly, we kindly ask that you follow a few simple rules."
 )
-rules_embed.add_field(name="Be nice to people", value="No harassment of any kind. Don’t be an asshole.", inline=False)
+rules_embed.add_field(name="😀 Be nice", value="No harassment of any kind. Don’t be an asshole.", inline=False)
 rules_embed.add_field(
-    name="Do not violate the course guidelines and/or policies",
+    name="🤓 Do not violate the course guidelines and/or policies",
     value="Don’t do anything that will get you kicked out of the class here, like cheating or sharing your solutions "
     "on this server.",
     inline=False,
 )
 rules_embed.add_field(
-    name="Respect people’s boundaries",
+    name="😴 Respect people’s boundaries",
     value="This server was created to help students connect with their graders and mentors, who are here voluntarily "
     "to support your success in the course. Please feel free to reach out for help but also be considerate of "
     "their time.",
