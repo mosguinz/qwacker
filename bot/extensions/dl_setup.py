@@ -13,40 +13,43 @@ from discord.ext import commands
 log = logging.getLogger()
 
 
-@dataclass
 class DL:
     first: str
     last: str
     email: str
-    sections: list[int]
-    username: str
-    emojis: list[str]
+    sections: list[int] = []
+    username: str = None
+    emojis: list[str] = []
     preferred: str = None
 
-    @classmethod
-    def from_dict_csv(cls: Self, d: dict) -> Self:
+    def __init__(self, d: dict):
         for field in "First", "Last", "Email", "Sections":
             if not d[field]:
                 raise ValueError(f"Missing value for {field}")
-        cls.first = d.get("First")
-        cls.last = d.get("Last")
-        cls.email = d.get("Email")
+        self.first = d.get("First")
+        self.last = d.get("Last")
+        self.email = d.get("Email")
 
         try:
-            cls.sections = list(int(s) for s in d.get("Sections").split(","))
+            self.sections = list(int(s) for s in d.get("Sections").split(","))
         except ValueError:
             raise ValueError(
                 f"Bad value for Sections field, expecting comma-separated integers, got: {d.get('Sections')}"
             )
 
-        cls.preferred = d.get("Preferred") or None
+        self.preferred = d.get("Preferred") or None
 
-        cls.emojis = []
+        self.emojis = []
         for character in d.get("Emojis", ""):
             if emoji.is_emoji(character):
-                cls.emojis.append(character)
+                self.emojis.append(character)
 
-        return cls
+    def __repr__(self) -> str:
+        return (
+            f"DL(first={self.first!r}, last={self.last!r}, preferred={self.preferred}, "
+            f"email={self.email!r}, sections={self.sections}, username={self.username!r}, "
+            f"emojis={self.emojis})"
+        )
 
 
 def parse_csv(raw_csv: str) -> list[DL]:
@@ -58,9 +61,11 @@ def parse_csv(raw_csv: str) -> list[DL]:
 
     for i, row in enumerate(reader, start=1):
         try:
-            dl = DL.from_dict_csv(row)
+            dl = DL(row)
+            dls.append(dl)
         except Exception as e:
             raise ValueError(f"Parsing failed at row {i}: {row}") from e
+
     return dls
 
 
