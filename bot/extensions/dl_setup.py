@@ -44,9 +44,9 @@ class DL:
 
     def __repr__(self) -> str:
         return (
-            f"DL(first={self.first!r}, last={self.last!r}, preferred={self.preferred}, "
-            f"email={self.email!r}, sections={self.sections}, username={self.username!r}, "
-            f"emojis={self.emojis})"
+            f"DL(first={self.first!r}, last={self.last!r}, preferred={self.preferred!r}, "
+            f"email={self.email!r}, sections={self.sections!r}, username={self.username!r}, "
+            f"emojis={self.emojis!r})"
         )
 
 
