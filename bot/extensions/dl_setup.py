@@ -39,10 +39,8 @@ class DL:
 
         self.preferred = d.get("Preferred") or None
 
-        self.emojis = []
-        for character in d.get("Emojis", ""):
-            if emoji.is_emoji(character):
-                self.emojis.append(character)
+        # try to escape some :emojis:
+        self.emojis = emoji.distinct_emoji_list(emoji.emojize(d.get("Emojis", ""), language="alias"))
 
     def __repr__(self) -> str:
         return (
@@ -102,7 +100,7 @@ class DLSetup(commands.Cog):
             await interaction.response.send_message(f"```{''.join(traceback.format_exception(e))}```")
             return
 
-        await interaction.response.send_message(dls)
+        await interaction.response.send_message(f"```{pprint.pformat(dls)}```")
 
 
 async def setup(bot: commands.Bot):
