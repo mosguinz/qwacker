@@ -33,7 +33,7 @@ class DL:
         cls.email = d.get("Email")
 
         try:
-            cls.sections = list(int(s) for s in ",".split(d.get("Sections")))
+            cls.sections = list(int(s) for s in d.get("Sections").split(","))
         except ValueError:
             raise ValueError(
                 f"Bad value for Sections field, expecting comma-separated integers, got: {d.get('Sections')}"
@@ -41,11 +41,10 @@ class DL:
 
         cls.preferred = d.get("Preferred") or None
 
-        for character in d.get("Emojis", "").replace(" ", ""):
+        cls.emojis = []
+        for character in d.get("Emojis", ""):
             if emoji.is_emoji(character):
                 cls.emojis.append(character)
-            else:
-                raise ValueError(f"'{character}' is not a valid emoji character")
 
         return cls
 
@@ -60,8 +59,8 @@ def parse_csv(raw_csv: str) -> list[DL]:
     for i, row in enumerate(reader, start=1):
         try:
             dl = DL.from_dict_csv(row)
-        except ValueError as e:
-            raise ValueError(f"Parsing failed at row {i}") from e
+        except Exception as e:
+            raise ValueError(f"Parsing failed at row {i}: {row}") from e
     return dls
 
 
