@@ -3,11 +3,12 @@ import logging
 import pprint
 import traceback
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Self
 
 import discord
 import emoji
-from discord import app_commands
+from discord import app_commands, Embed
 from discord.ext import commands
 
 log = logging.getLogger()
@@ -21,6 +22,7 @@ class DL:
     username: str = None
     emojis: list[str] = []
     preferred: str = None
+    timestamp: datetime = None
 
     def __init__(self, d: dict):
         for field in "First", "Last", "Email", "Sections":
@@ -42,11 +44,17 @@ class DL:
         # try to escape some :emojis:
         self.emojis = list(e["emoji"] for e in emoji.emoji_list(emoji.emojize(d.get("Emojis", ""), language="alias")))
 
+        if raw_ts := d.get("Timestamp"):
+            try:
+                self.timestamp = datetime.fromisoformat(raw_ts)
+            except ValueError:
+                raise ValueError(f"Bad timestamp format. Must be ISO 8601. Got: {raw_ts}")
+
     def __repr__(self) -> str:
         return (
             f"DL(first={self.first!r}, last={self.last!r}, preferred={self.preferred!r}, "
             f"email={self.email!r}, sections={self.sections!r}, username={self.username!r}, "
-            f"emojis={self.emojis!r})"
+            f"emojis={self.emojis!r}), timestamp={self.timestamp!r}"
         )
 
 
@@ -100,7 +108,7 @@ class DLSetup(commands.Cog):
             await interaction.response.send_message(f"```{''.join(traceback.format_exception(e))}```")
             return
 
-        await interaction.response.send_message(f"```{pprint.pformat(dls)}```")
+        await interaction.response.send_message(embed=Embed(description=f"```{pprint.pformat(dls)}```"))
 
 
 async def setup(bot: commands.Bot):
