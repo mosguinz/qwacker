@@ -40,7 +40,7 @@ class DL:
         self.preferred = d.get("Preferred") or None
 
         # try to escape some :emojis:
-        self.emojis = emoji.distinct_emoji_list(emoji.emojize(d.get("Emojis", ""), language="alias"))
+        self.emojis = list(e["emoji"] for e in emoji.emoji_list(emoji.emojize(d.get("Emojis", ""), language="alias")))
 
     def __repr__(self) -> str:
         return (
