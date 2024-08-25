@@ -13,6 +13,7 @@ from discord.ext import commands
 
 log = logging.getLogger()
 
+# fmt: off
 DL_TABS_URL = "https://dl.ducta.net"
 # Hopefully non-offensive food emojis...
 FALLBACK_EMOJIS = [
@@ -59,7 +60,8 @@ class DiscussionLeader:
                 f"Bad value for Sections field, expecting comma-separated integers, got: {d.get('Sections')}"
             )
 
-        self.preferred = d.get("Preferred") or None
+        if preferred := d.get("Preferred"):
+            self.preferred = preferred if preferred.lower() != self.first.lower() else None
 
         # try to escape some :emojis:
         self.emojis = list(e["emoji"] for e in emoji.emoji_list(emoji.emojize(d.get("Emojis", ""), language="alias")))
@@ -76,6 +78,10 @@ class DiscussionLeader:
             f"email={self.email!r}, sections={self.sections!r}, username={self.username!r}, "
             f"emojis={self.emojis!r}), timestamp={self.timestamp!r}"
         )
+
+    def get_preferred_name(self):
+        """Returns the preferred name, if one exists. Otherwise, returns the first name."""
+        return self.preferred or self.first
 
     def get_full_name(self):
         """Returns "First Last" or "First "Preferred" Last"."""
@@ -94,14 +100,14 @@ class DiscussionLeader:
 
     def get_ask_channel_name(self) -> str:
         """Returns "❓ask-name"."""
-        return f"❓ask-{self.preferred or self.first}"
+        return f"❓ask-{self.get_preferred_name()}"
 
     def get_role_name(self) -> str:
         """Returns "Team Name"."""
-        return f"Team {self.preferred or self.first}"
+        return f"Team {self.get_preferred_name()}"
 
 
-def parse_csv(raw_csv: str) -> list[DL]:
+def parse_csv(raw_csv: str) -> list[DiscussionLeader]:
     reader = csv.DictReader(raw_csv.splitlines())
     dls = []
 
