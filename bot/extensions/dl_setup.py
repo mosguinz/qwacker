@@ -14,9 +14,23 @@ from discord.ext import commands
 log = logging.getLogger()
 
 DL_TABS_URL = "https://dl.ducta.net"
+# Hopefully non-offensive food emojis...
+FALLBACK_EMOJIS = [
+    "🍇", "🍈", "🍉", "🍊", "🍋", "🍋‍🟩", "🍌", "🍍", "🥭", "🍎", "🍏",
+    "🍐", "🍑", "🍒", "🍓", "🫐", "🥝", "🍅", "🫒", "🥥", "🥑", "🍆",
+    "🥔", "🥕", "🌽", "🌶️", "🫑", "🥒", "🥬", "🥦", "🧄", "🧅", "🥜",
+    "🫘", "🌰", "🫚", "🫛", "🍄‍🟫", "🍞", "🥐", "🥖", "🫓", "🥨", "🥯",
+    "🥞", "🧇", "🧀", "🍖", "🍗", "🥩", "🥓", "🍔", "🍟", "🍕", "🌭",
+    "🥪", "🌮", "🌯", "🫔", "🥙", "🧆", "🥚", "🍳", "🥘", "🍲", "🫕",
+    "🥣", "🥗", "🍿", "🧈", "🧂", "🥫", "🍝", "🍱", "🍘", "🍙", "🍚",
+    "🍛", "🍜", "🍠", "🍢", "🍣", "🍤", "🍥", "🥮", "🍡", "🥟", "🥠",
+    "🥡", "🍦", "🍧", "🍨", "🍩", "🍪", "🎂", "🍰", "🧁", "🥧", "🍫",
+    "🍬", "🍭", "🍮", "🍯",
+]
+# fmt: on
 
 
-class DL:
+class DiscussionLeader:
     first: str
     last: str
     email: str
@@ -96,7 +110,7 @@ def parse_csv(raw_csv: str) -> list[DL]:
 
     for i, row in enumerate(reader, start=1):
         try:
-            dl = DL(row)
+            dl = DiscussionLeader(row)
             dls.append(dl)
         except Exception as e:
             raise ValueError(f"Parsing failed at row {i}: {row}") from e
@@ -104,7 +118,23 @@ def parse_csv(raw_csv: str) -> list[DL]:
     return dls
 
 
-async def create_ask_channel(dl: DL, category: discord.CategoryChannel, role: discord.Role) -> discord.TextChannel:
+def create_role_embed(dls: list[DiscussionLeader]) -> Embed:
+    """Create embed for role selections."""
+    embed = Embed()
+    embed.set_author(name="For CSC 215 Duclings")
+    embed.description = (
+        "Click on the reactions below to access the channel for your Discussion Section. "
+        "You will also be notified for any notifications your Discussion Leader sends."
+    )
+    sorted_dls = sorted(dls, key=lambda d: d.last)
+    for dl in sorted_dls:
+        embed.add_field(name=dl.get_full_name(), value=f"{dl.role_emoji}\n-# {dl.get_sections_string()}", inline=True)
+    return embed
+
+
+async def create_ask_channel(
+    dl: DiscussionLeader, category: discord.CategoryChannel, role: discord.Role
+) -> discord.TextChannel:
     channel = await category.create_text_channel(name=dl.get_ask_channel_name())
     await channel.edit(
         topic=f"<&#{role.id}> **{dl.get_sections_string()} \n\n"
