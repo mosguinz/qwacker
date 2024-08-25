@@ -144,16 +144,31 @@ def create_role_embed(dls: list[DiscussionLeader]) -> Embed:
     return embed
 
 
-async def create_ask_channel(
-    dl: DiscussionLeader, category: discord.CategoryChannel, role: discord.Role
-) -> discord.TextChannel:
+def assign_role_emoji(dls: list[DiscussionLeader]) -> list[DiscussionLeader]:
+    """Assign role emojis based on their provided preference."""
+    dls.sort(key=lambda d: d.timestamp or datetime.today(), reverse=True)
+    chosen_emojis = []
+    for dl in dls:
+        for e in dl.emojis:
+            if e not in chosen_emojis:
+                dl.role_emoji = e
+                chosen_emojis.append(e)
+                break
+        # Possible infinite loop if there are more than 100 DLs and all of them pick a food emoji...
+        while dl.role_emoji is None:
+            dl.role_emoji = random.choice(FALLBACK_EMOJIS)
+
+    return dls
+
+
+async def create_ask_channel(dl: DiscussionLeader, category: discord.CategoryChannel) -> discord.TextChannel:
     channel = await category.create_text_channel(name=dl.get_ask_channel_name())
     await channel.edit(
-        topic=f"<&#{role.id}> **{dl.get_sections_string()} \n\n"
+        topic=f"<@&{dl.role.id}> **{dl.get_sections_string()}** \n\n"
         f"For sensitive issues, please email {dl.email}. "
         f"For session times and agenda, visit {DL_TABS_URL}."
     )
-    await channel.set_permissions(target=role, read_messages=True)
+    await channel.set_permissions(target=dl.role, read_messages=True)
     return channel
 
 
