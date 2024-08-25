@@ -1,6 +1,7 @@
 import csv
 import logging
 import pprint
+import random
 import traceback
 from dataclasses import dataclass
 from datetime import datetime
@@ -134,7 +135,12 @@ def create_role_embed(dls: list[DiscussionLeader]) -> Embed:
     )
     sorted_dls = sorted(dls, key=lambda d: d.last)
     for dl in sorted_dls:
-        embed.add_field(name=dl.get_full_name(), value=f"{dl.role_emoji}\n-# {dl.get_sections_string()}", inline=True)
+        embed.add_field(
+            name=dl.get_full_name(),
+            value=f"{dl.role_emoji} <@&{dl.role.id if dl.role else dl.get_role_name()}>\n"
+            f"-# {dl.get_sections_string()}",
+            inline=True,
+        )
     return embed
 
 
