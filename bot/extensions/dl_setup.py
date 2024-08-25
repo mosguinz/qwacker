@@ -26,6 +26,10 @@ class DL:
     preferred: str = None
     timestamp: datetime = None
 
+    # assigned after role creation
+    role: discord.Role = None
+    role_emoji: str = None
+
     def __init__(self, d: dict):
         for field in "First", "Last", "Email", "Sections":
             if not d[field]:
