@@ -185,32 +185,54 @@ class DLSetup(commands.Cog):
     ):
         pass
 
-    @group.command(name="setup", description="Set up roles and ask-channels for Discussion Leaders")
+    @group.command(name="setup", description="Set up roles and ask-channels for Discussion Leaders.")
+    @app_commands.describe(category="The category to place the channels in.")
+    @app_commands.describe(role_channel="The channel to send the role reaction embed.")
     @app_commands.describe(csv_file="The CSV file to read.")
     async def dl_setup(
-        self, interaction: discord.Interaction, category: discord.CategoryChannel, csv_file: discord.Attachment = None
+        self,
+        interaction: discord.Interaction,
+        category: discord.CategoryChannel,
+        role_channel: discord.TextChannel,
+        csv_file: discord.Attachment = None,
     ) -> None:
         if not csv_file:
             await interaction.response.send_message("TODO: Show help + CSV format")
             return
 
-        b = await csv_file.read()
+        await interaction.response.defer(thinking=True)
+        dls: list[DiscussionLeader]
+
         try:
+            b = await csv_file.read()
             dls = parse_csv(b.decode("utf-8"))
-
-            chosen_emojis = []
-            # first sort DLs by timestamp submitted for emoji preference
-            dls.sort(key=lambda dl: dl.timestamp, reverse=True)
-
-            for dl in dls:
-                role = await interaction.guild.create_role(name=dl.get_role_name())
-                channel = await create_ask_channel(dl, category, role)
-
         except ValueError as e:
-            await interaction.response.send_message(f"```{''.join(traceback.format_exception(e))}```")
+            await interaction.followup.send(f"Bad CSV format: ```{''.join(traceback.format_exception(e))}```")
             return
 
-        await interaction.response.send_message(embed=Embed(description=f"```{pprint.pformat(dls)}```"))
+        await interaction.followup.send("CSV file successfully parsed. Creating roles...")
+
+        # Sort by preferred name for channel creation.
+        dls = assign_role_emoji(dls)
+        dls.sort(key=lambda d: d.get_preferred_name())
+        for dl in dls:
+            # Create role and channel for DL.
+            dl.role = await interaction.guild.create_role(name=dl.get_role_name(), color=discord.Color.orange())
+            channel = await create_ask_channel(dl, category)
+            await interaction.followup.send(
+                f"Created role <@&{dl.role.id}> and {channel.jump_url} for {dl.get_full_name()}."
+            )
+
+        # Sort by last name for role selection.
+        dls.sort(key=lambda d: d.last)
+        role_message = await role_channel.send(embed=create_role_embed(dls))
+        await interaction.followup.send(
+            content="# Manual action required\n"
+            "Send the following command to use carl-bot for role reactions:"
+            f"```!rr addmany {role_channel.id} {role_message.id}\n"
+            + "\n".join(f"{d.role_emoji} {d.role.id}" for d in dls)
+            + "```"
+        )
 
 
 async def setup(bot: commands.Bot):
