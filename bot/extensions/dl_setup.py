@@ -210,24 +210,35 @@ class DLSetup(commands.Cog):
 
         # Sort by preferred name for channel creation.
         dls = assign_role_emoji(dls)
-        dls.sort(key=lambda d: d.get_preferred_name())
+        dls.sort(key=lambda d: d.preferred_name)
         for dl in dls:
             # Create role and channel for DL.
-            dl.role = await interaction.guild.create_role(name=dl.get_role_name(), color=discord.Color.orange())
+            dl.role = await interaction.guild.create_role(name=dl.role_name, color=discord.Color.orange())
             channel = await create_ask_channel(dl, category)
-            await interaction.followup.send(
-                f"Created role <@&{dl.role.id}> and {channel.jump_url} for {dl.get_full_name()}."
-            )
+            await interaction.followup.send(f"Created role <@&{dl.role.id}> and {channel.jump_url} for {dl.full_name}.")
 
         # Sort by last name for role selection.
         dls.sort(key=lambda d: d.last)
         role_message = await role_channel.send(embed=create_role_embed(dls))
+
+        # Add the reactions to the message.
+        # This is the ONLY way to guarantee order of reaction that is consistent with the embed
+        # because Carl-bot's `!rr addmany` does not respect the order of the reactions provided.
+        for dl in dls:
+            await role_message.add_reaction(dl.role_emoji)
+
         await interaction.followup.send(
-            content="# Manual action required\n"
-            "Send the following command to use carl-bot for role reactions:"
-            f"```!rr addmany {role_channel.id} {role_message.id}\n"
-            + "\n".join(f"{d.role_emoji} {d.role.id}" for d in dls)
-            + "```"
+            content="\n".join(
+                [
+                    "# Set up reaction roles",
+                    f"A message have been sent for role selection: {role_message.jump_url}. "
+                    "Carl-bot handles role assignments, not this bot.",
+                    "To add reactions for role selection, copy and send the following command:",
+                    f"```/reactionrole addmany channel:{role_channel.id} message_id:{role_message.id} emoji_role_pair:",
+                    *(f"{d.role_emoji} {d.role.id}" for d in dls),
+                    "```",
+                ]
+            )
         )
 
 
