@@ -2,9 +2,8 @@ import logging
 import os
 
 import discord
-from discord.ext.commands import Bot
-
 import dotenv
+from discord.ext.commands import Bot
 
 dotenv.load_dotenv()
 

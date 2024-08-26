@@ -1,15 +1,13 @@
 import csv
 import logging
-import pprint
 import random
 import traceback
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Self
 
 import discord
 import emoji
-from discord import app_commands, Embed, TextChannel
+from discord import app_commands, Embed
 from discord.ext import commands
 
 log = logging.getLogger()
@@ -32,13 +30,14 @@ FALLBACK_EMOJIS = [
 # fmt: on
 
 
+@dataclass
 class DiscussionLeader:
     first: str
     last: str
     email: str
-    sections: list[int] = []
+    sections: list[int] = field(default_factory=list)
     username: str = None
-    emojis: list[str] = []
+    emojis: list[str] = field(default_factory=list)
     preferred: str = None
     timestamp: datetime = None
 
@@ -73,24 +72,20 @@ class DiscussionLeader:
             except ValueError:
                 raise ValueError(f"Bad timestamp format. Must be ISO 8601. Got: {raw_ts}")
 
-    def __repr__(self) -> str:
-        return (
-            f"DL(first={self.first!r}, last={self.last!r}, preferred={self.preferred!r}, "
-            f"email={self.email!r}, sections={self.sections!r}, username={self.username!r}, "
-            f"emojis={self.emojis!r}), timestamp={self.timestamp!r}"
-        )
-
-    def get_preferred_name(self):
+    @property
+    def preferred_name(self):
         """Returns the preferred name, if one exists. Otherwise, returns the first name."""
         return self.preferred or self.first
 
-    def get_full_name(self):
+    @property
+    def full_name(self):
         """Returns "First Last" or "First "Preferred" Last"."""
         if self.preferred:
             return f"{self.first} “{self.preferred}” {self.last}"
         return f"{self.first} {self.last}"
 
-    def get_sections_string(self):
+    @property
+    def sections_string(self):
         """Returns "Section 1" or "Sections 1 and 2" or "Sections 1, 2, and 3"."""
         if len(self.sections) == 1:
             return f"Section {self.sections[0]}"
@@ -99,13 +94,15 @@ class DiscussionLeader:
         else:
             return f"Sections {', '.join(str(s) for s in self.sections[:-1])}, and {self.sections[-1]}"
 
-    def get_ask_channel_name(self) -> str:
+    @property
+    def ask_channel_name(self) -> str:
         """Returns "❓ask-name"."""
-        return f"❓ask-{self.get_preferred_name()}"
+        return f"❓ask-{self.preferred_name}"
 
-    def get_role_name(self) -> str:
+    @property
+    def role_name(self) -> str:
         """Returns "Team Name"."""
-        return f"Team {self.get_preferred_name()}"
+        return f"Team {self.preferred_name}"
 
 
 def parse_csv(raw_csv: str) -> list[DiscussionLeader]:
@@ -136,9 +133,8 @@ def create_role_embed(dls: list[DiscussionLeader]) -> Embed:
     sorted_dls = sorted(dls, key=lambda d: d.last)
     for dl in sorted_dls:
         embed.add_field(
-            name=dl.get_full_name(),
-            value=f"{dl.role_emoji} <@&{dl.role.id if dl.role else dl.get_role_name()}>\n"
-            f"-# {dl.get_sections_string()}",
+            name=dl.full_name,
+            value=f"{dl.role_emoji} <@&{dl.role.id if dl.role else dl.role_name}>\n" f"-# {dl.sections_string}",
             inline=True,
         )
     return embed
@@ -162,9 +158,9 @@ def assign_role_emoji(dls: list[DiscussionLeader]) -> list[DiscussionLeader]:
 
 
 async def create_ask_channel(dl: DiscussionLeader, category: discord.CategoryChannel) -> discord.TextChannel:
-    channel = await category.create_text_channel(name=dl.get_ask_channel_name())
+    channel = await category.create_text_channel(name=dl.ask_channel_name)
     await channel.edit(
-        topic=f"<@&{dl.role.id}> **{dl.get_sections_string()}** \n\n"
+        topic=f"<@&{dl.role.id}> **{dl.sections_string}** \n\n"
         f"For sensitive issues, please email {dl.email}. "
         f"For session times and agenda, visit {DL_TABS_URL}."
     )
