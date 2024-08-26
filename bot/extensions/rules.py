@@ -58,9 +58,11 @@ class Rules(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @app_commands.command(name="rules", description="Post the server rules")
+    group = app_commands.Group(name="rules", description="Manage server rules")
+
+    @group.command(name="post", description="Post the server rules")
     @app_commands.describe(destination="The channel to post to. If not provided, the current channel will be used.")
-    async def rules(self, interaction: discord.Interaction, destination: discord.TextChannel = None):
+    async def post(self, interaction: discord.Interaction, destination: discord.TextChannel = None):
         if not interaction.user.guild_permissions.administrator:
             await interaction.response.send_message("You do not have permission to invoke this command.")
             return
@@ -70,8 +72,32 @@ class Rules(commands.Cog):
         if destination:
             message = await destination.send(content=welcome, embeds=embeds)
             await interaction.response.send_message(content=message.jump_url)
+            await message.add_reaction("👍")
+            await interaction.followup.send("Make sure that carl-bot is set up to assign role for the reaction.")
         else:
             await interaction.response.send_message(content=welcome, embeds=embeds)
+
+    @group.command(name="update", description="Update the server rules")
+    async def rules_update(self, interaction: discord.Interaction, channel: discord.TextChannel, message_id: str):
+        await interaction.response.defer(thinking=True)
+
+        try:
+            message = await channel.fetch_message(int(message_id))
+        except (ValueError, discord.NotFound) as e:
+            await interaction.followup.send(f"Could not find message with ID {message_id} in {channel.jump_url}.")
+            return
+
+        if message.author.id != self.bot.user.id:
+            await interaction.followup.send("The bot is not the author of this message.")
+            return
+
+        welcome = "# Welcome to CSC Duclings!"
+        embeds = [rules_embed, disclaimer_embed, pick_roles_embed]
+        await message.edit(content=welcome, embeds=embeds)
+        await message.add_reaction("👍")
+        await interaction.followup.send(
+            f"Edited {message.jump_url}. Make sure that carl-bot is set up to assign role for the reaction."
+        )
 
 
 async def setup(bot: commands.Bot):
