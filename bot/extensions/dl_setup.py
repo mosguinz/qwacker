@@ -124,11 +124,13 @@ def parse_csv(raw_csv: str) -> list[DiscussionLeader]:
 
 def create_role_embed(dls: list[DiscussionLeader]) -> Embed:
     """Create embed for role selections."""
-    embed = Embed()
-    embed.set_author(name="For CSC 215 Duclings")
+    embed = Embed(colour=discord.Colour.orange())
+    embed.set_author(name="For 215 Duclings")
+    embed.title = "Discussion Section roles"
     embed.description = (
-        "Click on the reactions below to access the channel for your Discussion Section. "
-        "You will also be notified for any notifications your Discussion Leader sends."
+        "Click on the reactions below to access the channel for your Discussion Section!\n"
+        "-# This will not affect your official enrollment in the Discussion Section. "
+        "You can update your selection as often as you’d like."
     )
     sorted_dls = sorted(dls, key=lambda d: d.last)
     for dl in sorted_dls:
