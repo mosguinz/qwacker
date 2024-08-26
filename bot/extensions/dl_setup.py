@@ -158,6 +158,13 @@ def assign_role_emoji(dls: list[DiscussionLeader]) -> list[DiscussionLeader]:
 
 
 async def create_ask_channel(dl: DiscussionLeader, category: discord.CategoryChannel) -> discord.TextChannel:
+    """
+    Create the "❓ask-name" channel for a given DL.
+
+    The created channel contains the DL's section(s) and email. The permission is set
+    such that users with the DL's role can access the channel. For access to work properly,
+    the parent category must not have other overrides for other publicly-assignable roles.
+    """
     channel = await category.create_text_channel(name=dl.ask_channel_name)
     await channel.edit(
         topic=f"<@&{dl.role.id}> **{dl.sections_string}** \n\n"
