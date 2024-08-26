@@ -123,7 +123,7 @@ def parse_csv(raw_csv: str) -> list[DiscussionLeader]:
 
 
 def create_role_embed(dls: list[DiscussionLeader]) -> Embed:
-    """Create embed for role selections."""
+    """Create embed for role selections. DLs are sorted by their last names."""
     embed = Embed(colour=discord.Colour.orange())
     embed.set_author(name="For 215 Duclings")
     embed.title = "Discussion Section roles"
@@ -223,14 +223,40 @@ class DLSetup(commands.Cog):
             channel = await create_ask_channel(dl, category)
             await interaction.followup.send(f"Created role <@&{dl.role.id}> and {channel.jump_url} for {dl.full_name}.")
 
-        # Sort by last name for role selection.
         role_message = await role_channel.send(embed=create_role_embed(dls))
 
         # Add the reactions to the message.
-        # This is the ONLY way to guarantee order of reaction that is consistent with the embed
-        # because Carl-bot's `!rr addmany` does not respect the order of the reactions provided.
-        for dl in dls:
-            await role_message.add_reaction(dl.role_emoji)
+        # This is the ONLY way to:
+        #  - guarantee order of reaction that is consistent with the embed because Carl-bot's `!rr addmany`
+        #  does not respect the order of the reactions provided.
+        #  - guarantee(-ish) that the assigned role emoji will work. (-ish) part because
+        #  there is a tiny chance it is stuck infinitely if no good options are found.
+        #  > Yes, really. This is the only way to do it. Even if a Unicode emoji displays
+        #  correctly on Discord doesn't mean it is supported.
+        while True:
+            run_again = False
+            sorted_dls = sorted(dls, key=lambda d: d.last)
+            for dl in sorted_dls:
+                try:
+                    await role_message.add_reaction(dl.role_emoji)
+                    continue
+                except discord.HTTPException as e:
+                    # STUPID FUCKING EDGE CASE BECAUSE OF OUTDATED EMOJI SUPPORT
+                    if e.code == 10014:  # Unknown emoji
+                        await interaction.followup.send(
+                            f"Could not use emoji {dl.role_emoji} for {dl.full_name} because it is not "
+                            f"supported by Discord. Next preferred option will be selected, if available."
+                        )
+                        # If this happens, start over.
+                        if dl.role_emoji in dl.emojis:
+                            dl.emojis.remove(dl.role_emoji)
+                        assign_role_emoji(dls)
+                        await role_message.edit(embed=create_role_embed(dls))
+                        await role_message.clear_reactions()
+                        run_again = True
+                        break
+            if not run_again:
+                break  # woo: everything went perfectly
 
         await interaction.followup.send(
             content="\n".join(
