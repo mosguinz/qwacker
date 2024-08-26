@@ -11,7 +11,9 @@ rules_embed.description = (
     "Welcome! This is a student-run Discord server for Professor Ta’s classes. To keep things "
     "running smoothly, we kindly ask that you follow a few simple rules."
 )
-rules_embed.add_field(name="😀 Be nice", value="No harassment of any kind. Don’t be an asshole.", inline=False)
+rules_embed.add_field(
+    name="😀 Don’t be an asshole", value="No harassment of any kind. Be nice to one another.", inline=False
+)
 rules_embed.add_field(
     name="🤓 Do not violate the course guidelines and/or policies",
     value="Don’t do anything that will get you kicked out of the class here, like cheating or sharing your solutions "
@@ -46,7 +48,10 @@ disclaimer_embed.description = "\n\n".join(
 )
 
 pick_roles_embed = Embed(title="Ready?")
-pick_roles_embed.description = "Head over to <#815094070900031530> and select your roles to gain access to the server!"
+pick_roles_embed.description = (
+    "Click on the reaction below to indicate your agreement with the rules and gain access "
+    "to the server. After that, proceed to <#815094070900031530> to obtain your roles!"
+)
 
 
 class Rules(commands.Cog):
