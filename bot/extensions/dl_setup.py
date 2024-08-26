@@ -73,7 +73,7 @@ class DiscussionLeader:
                 raise ValueError(f"Bad timestamp format. Must be ISO 8601. Got: {raw_ts}")
 
     @property
-    def preferred_name(self):
+    def display_name(self):
         """Returns the preferred name, if one exists. Otherwise, returns the first name."""
         return self.preferred or self.first
 
@@ -97,12 +97,12 @@ class DiscussionLeader:
     @property
     def ask_channel_name(self) -> str:
         """Returns "❓ask-name"."""
-        return f"❓ask-{self.preferred_name}"
+        return f"❓ask-{self.display_name}"
 
     @property
     def role_name(self) -> str:
         """Returns "Team Name"."""
-        return f"Team {self.preferred_name}"
+        return f"Team {self.display_name}"
 
 
 def parse_csv(raw_csv: str) -> list[DiscussionLeader]:
@@ -217,7 +217,7 @@ class DLSetup(commands.Cog):
 
         # Sort by preferred name for channel creation.
         dls = assign_role_emoji(dls)
-        for dl in sorted(dls, key=lambda d: d.preferred_name):
+        for dl in sorted(dls, key=lambda d: d.display_name):
             # Create role and channel for DL.
             dl.role = await interaction.guild.create_role(name=dl.role_name, color=discord.Color.orange())
             channel = await create_ask_channel(dl, category)
