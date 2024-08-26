@@ -132,8 +132,7 @@ def create_role_embed(dls: list[DiscussionLeader]) -> Embed:
         "-# This will not affect your official enrollment in the Discussion Section. "
         "You can update your selection as often as you’d like."
     )
-    sorted_dls = sorted(dls, key=lambda d: d.last)
-    for dl in sorted_dls:
+    for dl in sorted(dls, key=lambda d: d.last):
         embed.add_field(
             name=dl.full_name,
             value=f"{dl.role_emoji} <@&{dl.role.id if dl.role else dl.role_name}>\n" f"-# {dl.sections_string}",
@@ -144,9 +143,8 @@ def create_role_embed(dls: list[DiscussionLeader]) -> Embed:
 
 def assign_role_emoji(dls: list[DiscussionLeader]) -> list[DiscussionLeader]:
     """Assign role emojis based on their provided preference."""
-    dls.sort(key=lambda d: d.timestamp or datetime.today(), reverse=True)
     chosen_emojis = []
-    for dl in dls:
+    for dl in sorted(dls, key=lambda d: d.timestamp or datetime.today()):
         for e in dl.emojis:
             if e not in chosen_emojis:
                 dl.role_emoji = e
@@ -219,15 +217,13 @@ class DLSetup(commands.Cog):
 
         # Sort by preferred name for channel creation.
         dls = assign_role_emoji(dls)
-        dls.sort(key=lambda d: d.preferred_name)
-        for dl in dls:
+        for dl in sorted(dls, key=lambda d: d.preferred_name):
             # Create role and channel for DL.
             dl.role = await interaction.guild.create_role(name=dl.role_name, color=discord.Color.orange())
             channel = await create_ask_channel(dl, category)
             await interaction.followup.send(f"Created role <@&{dl.role.id}> and {channel.jump_url} for {dl.full_name}.")
 
         # Sort by last name for role selection.
-        dls.sort(key=lambda d: d.last)
         role_message = await role_channel.send(embed=create_role_embed(dls))
 
         # Add the reactions to the message.
