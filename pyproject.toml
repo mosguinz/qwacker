@@ -9,6 +9,7 @@ python = "^3.11"
 "discord.py" = "^2.3.2"
 async-timeout = "^4.0.3"
 python-dotenv = "^1.0.1"
+emoji = "^2.12.1"
 
 [tool.poetry.dev-dependencies]
 black = "^24.4.2"

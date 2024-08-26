@@ -2,9 +2,8 @@ import logging
 import os
 
 import discord
-from discord.ext.commands import Bot
-
 import dotenv
+from discord.ext.commands import Bot
 
 dotenv.load_dotenv()
 
@@ -27,6 +26,7 @@ class Qwacker(Bot):
     async def setup_hook(self) -> None:
         await self.load_extension("bot.extensions.archive_channels")
         await self.load_extension("bot.extensions.rules")
+        await self.load_extension("bot.extensions.dl_setup")
 
         self.tree.copy_global_to(guild=GUILD)
         await self.tree.sync(guild=GUILD)
