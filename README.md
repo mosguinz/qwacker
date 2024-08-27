@@ -42,13 +42,17 @@ poetry run python -m bot
 
 ### Discussion Leader setup
 
-Creates @Team DL and ❓ask-channels for Discussion Leaders.
+Creates `@Team DL` and `#❓ask-channels` for Discussion Leaders.
+
+> [!NOTE]
+> The bot does not handle role assignments. [Carl-bot](https://carl.gg) does. After running the command, you
+> will need to use Carl-bot's `/reactionrole` feature to enable role assignments.
 
 ```
 /dl setup category role_channel csv_file
 ```
 
-* `category` -- Category to create the "❓ask-name" channels.
+* `category` -- Category to create the `#❓ask-name` channels.
 * `role_channel` -- The channel to post the role assignment embed.
     * This channel should be read-only. The bot does not enforce this.
 * `csv_file` -- A CSV file in the format described below.
@@ -91,14 +95,25 @@ Other columns will be ignored.
 The ID field is ignored by the bot, but you may have it to identify the Discussion Leader if you are collecting form
 responses.
 
+Here:
+* Donald Duck's team role and channel name will be: `@Team Duc` and `#❓ask-duc` because a preferred name is
+  provided.
+* Minnie's however, will just be `@Team Minnie` and `#❓ask-minnie`.
+* Minnie will get 🐧 for their role, while Goofy will get their second choice, 🐶, because their timestamp is after
+  Minnie's.
+
 | First  | Last  | ID        | Email           | Sections | Preferred | Username  | Emojis   | Timestamp           |
 |--------|-------|-----------|-----------------|----------|-----------|-----------|----------|---------------------|
-| Donald | Duck  | 999999991 | dduck@sfsu.edu  | 12,34    | Duc       | qwackling | 🐥🎉⚾️   | 2024-08-13T09:59:04 |
-| Minnie | Mouse | 999999992 | mmouse@sfsu.edu | 55, 78   |           | jerry     | 🐧🚃🍌📮 | 2024-08-09T14:37:05 |
+| Donald | Duck  | 999999991 | dduck@sfsu.edu  | 12,34    | Duc       | qwackling | 🐥🎉⚾️   | 2024-08-09T09:59:04 |
+| Minnie | Mouse | 999999992 | mmouse@sfsu.edu | 55, 78   |           | jerry     | 🐧🚃🍌📮 | 2024-08-10T14:37:05 |
+| Goofy  | Dog   | 999999993 | gdog@sfsu.edu   | 15, 49   |           |           | 🐧🐶     | 2024-08-12T14:37:05 |
 
 ### Rules
 
 Post or update the rules. The embed is hardcoded in the source.
+
+> [!IMPORTANT]
+> Make sure that Carl-bot is set up to assign the `Member` role for users reacting to this message.
 
 ```
 /rules post [destination]
