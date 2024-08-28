@@ -1,24 +1,23 @@
 # qwacker
 
-Utility Discord bot for CSC Duclings server. It is meant for housekeeping purposes at the start and end of each
-semester.
+Utility Discord bot designed for the CSC Duclings server, primarily used for housekeeping tasks at the beginning and end of each semester.
 
-## Run
+## Running
 
-First, populate the `.env` file:
+First, configure the `.env` file with the required environment variables:
 
 ```dotenv
 DISCORD_BOT_TOKEN=abcdefg
 GUILD_ID=1234567
 ```
 
-Install dependencies:
+Install the necessary dependencies:
 
 ```shell
 poetry update
 ```
 
-Then run it:
+Run the bot using the following command:
 
 ```shell
 poetry run python -m bot
@@ -26,94 +25,86 @@ poetry run python -m bot
 
 ## Commands
 
-### Channel archival
+### Channel Archival
 
-"Archive" channel(s) by moving them to a different category and making them read-only.
+The archival command moves specified channel(s) to a different category and sets them to read-only.
 
 ```
 /archive to_archive destination [suffix]
 ```
 
-* `to_archive` -- Text channel or category to archive.
-* `destination` -- Category to move the text channels to.
-    * This category's permission should be read-only. The bot does not enforce this. It will inherit the permissions of
-      the parent.
-* `suffix` (optional) -- Suffix to add to channel names.
+- `to_archive` — The text channel or category to be archived.
+- `destination` — The category to which the text channels will be moved. 
+  - Note: The category should be configured as read-only, but the bot does not enforce this; it will inherit the permissions of the parent category.
+- `suffix` (optional) — An optional suffix to add to channel names.
 
-### Discussion Leader setup
+### Discussion Leader Setup
 
-Creates `@Team DL` and `#❓ask-channels` for Discussion Leaders.
+This command creates `@Team DL` roles and `#❓ask-channels` for Discussion Leaders.
 
 > [!NOTE]
-> The bot does not handle role assignments. [Carl-bot](https://carl.gg) does. After running the command, you
-> will need to use Carl-bot's `/reactionrole` feature to enable role assignments.
+> The bot does not handle role assignments; this is managed by [Carl-bot](https://carl.gg). After executing the command, use Carl-bot's `/reactionrole` feature to enable role assignments.
 
 ```
 /dl setup category role_channel csv_file
 ```
 
-* `category` -- Category to create the `#❓ask-name` channels.
-* `role_channel` -- The channel to post the role assignment embed.
-    * This channel should be read-only. The bot does not enforce this.
-* `csv_file` -- A CSV file in the format described below.
+- `category` — The category where the `#❓ask-name` channels will be created.
+- `role_channel` — The channel in which the role assignment embed will be posted.
+  - Note: This channel should be set as read-only, although the bot does not enforce this.
+- `csv_file` — A CSV file formatted as described below.
 
-#### CSV file format
+#### CSV format
 
-The first row of the uploaded CSV file must be column headers. Column headers are **case-sensitive**.
+The uploaded CSV file must have column headers in the first row, which are **case-sensitive**.
 
-##### Required fields
+**Required fields:** These fields must be present, and each row must have corresponding values.
 
-* `First` -- The Discussion Leader's first name.
-* `Last` -- The Discussion Leader's last name.
-* `Email` -- The Discussion Leader's email.
-* `Sections` -- Sections belonging to the Discussion Leader.
-    * This must be a comma-separated string of integers e.g., `"45, 22"`.
+- `First` — First name of the Discussion Leader.
+- `Last` — Last name of the Discussion Leader.
+- `Email` — Email address of the Discussion Leader.
+- `Sections` — Sections assigned to the Discussion Leader (must be a comma-separated string of integers, e.g., `"45, 22"`).
 
-##### Optional, but *really-should-have* fields
+**Optional, but really-should-have fields:** These fields are not mandatory but are highly recommended. If included, not all rows need to have values.
 
-* `Preferred` -- The Discussion Leader's preferred name.
-    * If provided, this will be name used for their channel and role. Otherwise, their first name will be used.
-* ~~`Username` -- The Discussion Leader's Discord username. This is for automatic role assignment.~~
-* `Emojis` -- A string of emojis chosen by the Discussion Leader. The first available choice will be used for role
-  assignment. If empty, a random emoji will be chosen.
-* `Timestamp` -- An ISO 8601 timestamp e.g. `2024-08-27T08:47:04`. Offset is optional. This is used to determine the
-  priority given for emoji preference.
+- `Preferred` — The preferred name of the Discussion Leader.
+  - If provided, this name will be used for the channel and role; otherwise, the first name will be used.
+- ~~`Username` — The Discussion Leader's Discord username (used for automatic role assignment).~~
+- `Emojis` — A string of emojis chosen by the Discussion Leader; the first available choice will be used for role assignment. If empty, a random emoji will be assigned.
+- `Timestamp` — An ISO 8601 timestamp (e.g., `2024-08-27T08:47:04`). The timestamp helps determine priority for emoji selection.
 
-Other columns will be ignored.
+Any other columns will be ignored.
 
-##### Examples
+**Example CSV Formats**
 
-**Required fields only**
+**With Required Fields Only:**
 
 | First  | Last  | Email           | Sections |
 |--------|-------|-----------------|----------|
 | Donald | Duck  | dduck@sfsu.edu  | 12, 34   |
 | Minnie | Mouse | mmouse@sfsu.edu | 55, 78   |
 
-**All fields, including an "ID" field**
+**With All Fields (Including an Ignored "ID" Field):**
 
-The ID field is ignored by the bot, but you may have it to identify the Discussion Leader if you are collecting form
-responses.
+The `ID` field will be ignored by the bot but may be useful for identifying Discussion Leaders if form responses are being collected.
 
-Here:
-* Donald Duck's team role and channel name will be: `@Team Duc` and `#❓ask-duc` because a preferred name is
-  provided.
-* Minnie's however, will just be `@Team Minnie` and `#❓ask-minnie`.
-* Minnie will get 🐧 for their role, while Goofy will get their second choice, 🐶, because their timestamp is after
-  Minnie's.
+In this example:
+- Donald Duck’s role and channel will be `@Team Duc` and `#❓ask-duc` because a preferred name is provided.
+- Minnie’s role and channel will be `@Team Minnie` and `#❓ask-minnie`.
+- Minnie will receive the 🐭 emoji, while Mickey will receive 🧀 as their second choice due to a later timestamp.
 
-| First  | Last  | ID        | Email           | Sections | Preferred | Username  | Emojis   | Timestamp           |
-|--------|-------|-----------|-----------------|----------|-----------|-----------|----------|---------------------|
-| Donald | Duck  | 999999991 | dduck@sfsu.edu  | 12,34    | Duc       | qwackling | 🐥🎉⚾️   | 2024-08-09T09:59:04 |
-| Minnie | Mouse | 999999992 | mmouse@sfsu.edu | 55, 78   |           | jerry     | 🐧🚃🍌📮 | 2024-08-10T14:37:05 |
-| Goofy  | Dog   | 999999993 | gdog@sfsu.edu   | 15, 49   |           |           | 🐧🐶     | 2024-08-12T14:37:05 |
+| First  | Last  | ID        | Email            | Sections | Preferred | Username  | Emojis   | Timestamp           |
+|--------|-------|-----------|------------------|----------|-----------|-----------|----------|---------------------|
+| Donald | Duck  | 999999991 | dduck@sfsu.edu   | 12,34    | Duc       | qwackling | 🐥🎉⚾️   | 2024-08-09T09:59:04 |
+| Minnie | Mouse | 999999992 | mmouse@sfsu.edu  | 55, 78   |           | jerry     | 🐭🚃🍌📮 | 2024-08-10T14:37:05 |
+| Mickey | Mouse | 999999993 | mmouse1@sfsu.edu | 15, 49   |           | jinx      | 🐭🧀     | 2024-08-12T14:37:05 |
 
 ### Rules
 
-Post or update the rules. The embed is hardcoded in the source.
+Use these commands to post or update server rules. The content of the rules embed is hardcoded in the source code.
 
 > [!IMPORTANT]
-> Make sure that Carl-bot is set up to assign the `Member` role for users reacting to this message.
+> Ensure that Carl-bot is configured to assign the `Member` role to users who react to the posted rules message.
 
 ```
 /rules post [destination]
