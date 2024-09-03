@@ -30,24 +30,25 @@ rules_embed.add_field(
 
 disclaimer_embed = Embed(title="Disclaimer")
 disclaimer_embed.description = "\n\n".join(
-    (
-        "This Discord server is independently managed by current and former students of Professor Ta "
-        "and is not affiliated, authorized, endorsed by, or in any way officially associated with the University or "
-        "the Department of Computer Science.",
-        "**Your participation is entirely optional**, and the content shared here is for informational purposes only. "
-        "Any announcements or communications from tutors, graders, discussion leaders, or any members acting on "
-        "official capacity on Discord are provided for your convenience and do not replace official channels such as "
-        "email and Canvas discussion forums.",
-        "The Department of Computer Science, Professor Ta, and members of his team are not affiliated with this "
-        "server and are not responsible for moderating its content. Any advice or information shared here should be "
-        "cross-referenced with official resources. The maintainers of this server are not responsible for any "
-        "inaccuracies or issues that may arise from the use of this server.",
+    f"-# {para}"
+    for para in (
+        "This Discord server is independently operated by current and former students of Professor Ta. "
+        "It is not affiliated with, authorized, endorsed, or officially associated with the University or the "
+        "Department of Computer Science in any capacity.",
+        "**Your participation is entirely optional**, and the content shared here is intended solely for informational "
+        "purposes. Any announcements or communications from tutors, graders, discussion leaders, or other individuals "
+        "in an official capacity on Discord are provided for convenience and do not replace official channels as "
+        "prescribed by the course.",
+        "The Department of Computer Science, Professor Ta, and members of his team are not officially associated with "
+        "this server and assume no responsibility for its content or moderation. Any advice or information provided "
+        "here should be cross-checked with official sources. The server maintainers are not responsible for any "
+        "inaccuracies or problems that may arise from using this server.",
         "We’ve kept this space running for our fellow Duclings since Spring 2021 and hope to pass it on to future "
         "cohorts — please help us maintain it by adhering to the rules and using common sense.",
     )
 )
 
-pick_roles_embed = Embed(title="Ready?")
+pick_roles_embed = Embed(title="Accept rules and select your roles!")
 pick_roles_embed.description = (
     "Click on the reaction below to indicate your agreement with the rules and gain access "
     "to the server. After that, proceed to <#815094070900031530> to obtain your roles!"
