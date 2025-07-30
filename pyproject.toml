@@ -1,25 +1,24 @@
-[tool.poetry]
+[project]
 name = "qwacker"
 version = "0.1.0"
 description = ""
-authors = ["mosguinz <mos.guinz@gmail.com>"]
+authors = [{ name = "mosguinz", email = "mos.guinz@gmail.com" }]
+requires-python = "~=3.11"
+dependencies = [
+    "discord.py>=2.3.2,<3",
+    "async-timeout>=4.0.3,<5",
+    "python-dotenv>=1.0.1,<2",
+    "emoji>=2.12.1,<3",
+]
 
-[tool.poetry.dependencies]
-python = "^3.11"
-"discord.py" = "^2.3.2"
-async-timeout = "^4.0.3"
-python-dotenv = "^1.0.1"
-emoji = "^2.12.1"
-
-[tool.poetry.dev-dependencies]
-black = "^24.4.2"
+[dependency-groups]
+dev = [
+    "black>=24.4.2,<25",
+    "taskipy==1.14.1",
+]
 
 [tool.black]
 line-length = 120
 
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
-
-[tool.poetry.scripts]
-start = "bot.__main__:main"
+[tool.taskipy.tasks]
+start = "python -m bot"

@@ -14,13 +14,13 @@ GUILD_ID=1234567
 Install the necessary dependencies:
 
 ```shell
-poetry update
+uv sync
 ```
 
 Run the bot using the following command:
 
 ```shell
-poetry run python -m bot
+uv run task start
 ```
 
 ## Commands
@@ -34,7 +34,7 @@ The archival command moves specified channel(s) to a different category and sets
 ```
 
 - `to_archive` — The text channel or category to be archived.
-- `destination` — The category to which the text channels will be moved. 
+- `destination` — The category to which the text channels will be moved.
   - Note: The category should be configured as read-only, but the bot does not enforce this; it will inherit the permissions of the parent category.
 - `suffix` (optional) — An optional suffix to add to channel names.
 
