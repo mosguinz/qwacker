@@ -12,6 +12,8 @@ jobs:
       - production
     environment:
       name: Production
+    env:
+      BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4

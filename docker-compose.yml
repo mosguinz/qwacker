@@ -3,6 +3,7 @@ services:
     build: .
     container_name: qwacker-bot
     env_file:
-      - .env
+      - path: .env
+        required: false
     restart: unless-stopped
     command: uv run task start
